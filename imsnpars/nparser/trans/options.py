@@ -4,7 +4,7 @@ Created on 23.08.2017
 @author: falensaa
 '''
 
-from tools import  utils
+from imsnpars.tools import  utils
 
 def addParserCmdArguments(argParser):
     transArgs = argParser.add_argument_group('Transition-based parser')

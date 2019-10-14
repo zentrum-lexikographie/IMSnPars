@@ -8,9 +8,9 @@ import pickle
 import numpy as np
 import dynet
 
-import nparser.features
-from tools import  utils, neural
-from nparser.graph import features as gfeatures
+import imsnpars.nparser.features
+from imsnpars.tools import  utils, neural
+from imsnpars.nparser.graph import features as gfeatures
 
 class LblTagDict(object):
     def __init__(self):

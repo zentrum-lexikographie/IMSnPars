@@ -7,7 +7,7 @@ Created on 21.09.2018
 import abc
 import numpy as np
 
-from tools import datatypes
+from imsnpars.tools import datatypes
 
 class MaximumSpanningTreeAlgorithm(object):
     __metaclass__ = abc.ABCMeta

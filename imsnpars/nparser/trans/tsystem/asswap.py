@@ -6,8 +6,8 @@ Created on 18.08.2017
 
 import logging
 
-from tools import datatypes
-from nparser.trans.tsystem import tdatatypes, arcstandard, oracle
+from imsnpars.tools import datatypes
+from imsnpars.nparser.trans.tsystem import tdatatypes, arcstandard, oracle
 
 class Swap(tdatatypes.Transition):
     

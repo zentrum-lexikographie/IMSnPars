@@ -7,7 +7,7 @@ Created on 23.08.2017
 import logging
 import numpy as np
 
-from tools import neural
+from imsnpars.tools import neural
 
 class NNGraphParsingTask(neural.NNTreeTask):
     def __init__(self, mstAlg, featReprBuilder, decod, network, augmentScore):

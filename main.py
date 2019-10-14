@@ -9,9 +9,9 @@ import sys
 import random
 import argparse
 
-from tools import utils, evaluator, training
-from nparser import builder
-from nparser import options
+from imsnpars.tools import utils, evaluator, training
+from imsnpars.nparser import builder
+from imsnpars.nparser import options
 
 def buildParserFromArgs():
     argParser = argparse.ArgumentParser(description="""IMS Neural Parser""", add_help=False)
@@ -100,36 +100,39 @@ def prepareDatasets(args, opts):
     
     return trainData, devData, testData
             
-if __name__ == '__main__':
-    args, opts, parser  = buildParserFromArgs()
-    
+
+def main():
+    args, opts, parser = buildParserFromArgs()
+
     if args.test == None and args.output != None:
         logging.warn("Option 'output' will not be used without specifying 'test' file")
-        
+
     trainData, devData, testData = prepareDatasets(args, opts)
     if args.train:
         if args.save == None and args.save_max == None:
             logging.warn("Training without save option")
-        
+
         if args.patience:
-            trainer = training.EarlyStopTrainingManager(args.epochs, lambda : parser.save(args.save), patience = args.patience)
+            trainer = training.EarlyStopTrainingManager(args.epochs, lambda: parser.save(args.save),
+                                                        patience=args.patience)
         elif args.save_max != None:
-            trainer = training.SaveMaxTrainingManager(args.epochs, lambda : parser.save(args.save), lambda : parser.save(args.save_max))
+            trainer = training.SaveMaxTrainingManager(args.epochs, lambda: parser.save(args.save),
+                                                      lambda: parser.save(args.save_max))
         else:
-            trainer = training.AllEpochsTrainingManager(args.epochs, lambda : parser.save(args.save))
-            
+            trainer = training.AllEpochsTrainingManager(args.epochs, lambda: parser.save(args.save))
+
         parser.train(trainData, trainer, devData)
-        
+
         # because of early update we need to load the best model
         if args.patience and args.test != None and args.save != None:
             parser.load(args.save)
-    
+
     elif args.model != None:
         parser.load(args.model)
     else:
         logging.error("One option: train/load is obligatory")
         sys.exit()
-    
+
     if args.test != None:
         if args.output == None:
             lazyEval = evaluator.LazyTreeEvaluator()
@@ -137,3 +140,7 @@ if __name__ == '__main__':
             logging.info("Test acc: %f %f" % (lazyEval.calcUAS(), lazyEval.calcLAS()))
         else:
             parser.predict(testData, utils.LazySentenceWriter(open(args.output, "w")))
+
+
+if __name__ == '__main__':
+    main()

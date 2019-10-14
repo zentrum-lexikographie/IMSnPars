@@ -7,9 +7,9 @@ Created on 23.08.2017
 import dynet
 import numpy as np
 
-import nparser.features
-from tools import utils
-from tools.neural import NNTreeTask
+import imsnpars.nparser.features
+from imsnpars.tools import utils
+from imsnpars.tools.neural import NNTreeTask
     
 class NNTransParsingTask(NNTreeTask):
     def __init__(self, tsystem, anoracle, network, featReprBuilder):
@@ -36,7 +36,7 @@ class NNTransParsingTask(NNTreeTask):
        
         state = self.__tsystem.initialState(len(instance.sentence))
         
-        cache = nparser.features.FeatOutputCache()
+        cache = imsnpars.nparser.features.FeatOutputCache()
         while not self.__tsystem.isFinal(state):
             featReprs = self.__featReprBuilder.extractAllAndBuildFeatRepr(state, cache, vectors, isTraining=True)
             netOut = self.__network.buildOutput(dynet.esum(featReprs), isTraining=True)
@@ -77,7 +77,7 @@ class NNTransParsingTask(NNTreeTask):
     def predict(self, instance, vectors):
         state = self.__tsystem.initialState(len(instance.sentence))
         
-        cache = nparser.features.FeatOutputCache()
+        cache = imsnpars.nparser.features.FeatOutputCache()
         self.__continueUntilFinal(vectors, state, cache)
         return state.arcs.buildTree()
     

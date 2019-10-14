@@ -6,7 +6,7 @@ Created on 25.08.2017
 
 import logging, pickle
 
-from nparser.trans.tsystem import tdatatypes
+from imsnpars.nparser.trans.tsystem import tdatatypes
 
 class TransSystemLabeler(tdatatypes.TransSystem):
     

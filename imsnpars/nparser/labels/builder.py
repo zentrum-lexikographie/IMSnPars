@@ -6,13 +6,13 @@ Created on 23.08.2017
 
 import logging
 
-import nparser.network
-import nparser.features
-import nparser.trans.builder as tbuilder
-import nparser.trans.labeler as tlabeler
-import nparser.graph.builder as gbuilder
-import nparser.graph.features as gfeatures
-import nparser.labels.task as ltask
+import imsnpars.nparser.network
+import imsnpars.nparser.features
+import imsnpars.nparser.trans.builder as tbuilder
+import imsnpars.nparser.trans.labeler as tlabeler
+import imsnpars.nparser.graph.builder as gbuilder
+import imsnpars.nparser.graph.features as gfeatures
+import imsnpars.nparser.labels.task as ltask
 
 def buildGraphLabeler(opts, dummyBuilder, reprBuilder):
     reprDim = reprBuilder.getDim()
@@ -24,8 +24,8 @@ def buildGraphLabeler(opts, dummyBuilder, reprBuilder):
     featIds = extractor.getFeatIds() + [ feat.getFeatId() for feat in featBuilders.values() ]
     
     # all network's parameters
-    lblNetwork = nparser.network.ParserNetwork(opts.mlpHiddenDim, opts.nonLinFun, featIds)
-    featBuilder = nparser.features.FeatReprBuilder(extractor, featBuilders, dummyBuilder, lblNetwork, opts.lblLayer)
+    lblNetwork = imsnpars.nparser.network.ParserNetwork(opts.mlpHiddenDim, opts.nonLinFun, featIds)
+    featBuilder = imsnpars.nparser.features.FeatReprBuilder(extractor, featBuilders, dummyBuilder, lblNetwork, opts.lblLayer)
     labelerTask = ltask.LabelerGraphTask(featBuilder, lblNetwork, opts.lblLayer)
     return labelerTask
     

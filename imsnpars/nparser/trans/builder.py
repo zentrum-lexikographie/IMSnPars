@@ -7,11 +7,11 @@ Created on 23.08.2017
 import logging
 import sys
 
-import nparser.network
-import nparser.features
-import nparser.trans.features as tfeatures
-from nparser.trans import task, labeler
-from nparser.trans.tsystem import asswap, arcstandard, archybrid, ahswap, oracle
+import imsnpars.nparser.network
+import imsnpars.nparser.features
+import imsnpars.nparser.trans.features as tfeatures
+from imsnpars.nparser.trans import task, labeler
+from imsnpars.nparser.trans.tsystem import asswap, arcstandard, archybrid, ahswap, oracle
 
 def _buildOracleAndTransSystem(opts):
     tsystem = _buildTransSystem(opts)
@@ -119,8 +119,8 @@ def buildTransParser(opts, dummyBuilder, reprBuilder):
     transExtractor = _buildFeatureExtractor(opts.features)
     
     featIds = transExtractor.getFeatIds()
-    transNetwork = nparser.network.ParserNetwork(opts.mlpHiddenDim, opts.nonLinFun, featIds)
-    featBuilder = nparser.features.FeatReprBuilder(transExtractor, { }, dummyBuilder, transNetwork, opts.parseLayer)
+    transNetwork = imsnpars.nparser.network.ParserNetwork(opts.mlpHiddenDim, opts.nonLinFun, featIds)
+    featBuilder = imsnpars.nparser.features.FeatReprBuilder(transExtractor, { }, dummyBuilder, transNetwork, opts.parseLayer)
     
     parsingTask = task.NNTransParsingTask(tsystem, anoracle, transNetwork, featBuilder)
     return parsingTask

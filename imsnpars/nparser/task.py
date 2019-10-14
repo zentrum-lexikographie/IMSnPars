@@ -9,7 +9,7 @@ import logging
 import random
 import datetime
 
-from tools import datatypes, utils, evaluator
+from imsnpars.tools import datatypes, utils, evaluator
        
 class NNParserTrainLogger(object):
     """Class cumulates all the logging, tracking, and printing of the parser"""

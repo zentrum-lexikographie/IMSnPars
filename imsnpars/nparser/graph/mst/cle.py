@@ -6,7 +6,7 @@ Created on 21.09.2018
 
 import networkx
 
-from nparser.graph.mst import gdatatypes
+from imsnpars.nparser.graph.mst import gdatatypes
 
 class SquareListScores(object):
     def __init__(self, length):

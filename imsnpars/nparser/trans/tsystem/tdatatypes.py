@@ -7,7 +7,7 @@ Created on 18.08.2017
 import abc
 import heapq
 
-from tools import datatypes
+from imsnpars.tools import datatypes
 
 class Transition(object):
     __metaclass__ = abc.ABCMeta

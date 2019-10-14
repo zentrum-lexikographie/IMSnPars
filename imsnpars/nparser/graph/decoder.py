@@ -7,7 +7,7 @@ Created on 23.08.2017
 import abc
 import dynet
 
-from nparser.graph import features as gfeatures
+from imsnpars.nparser.graph import features as gfeatures
 
 class GraphDecoder(object):
     __metaclass__ = abc.ABCMeta

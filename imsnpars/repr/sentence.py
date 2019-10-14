@@ -8,7 +8,7 @@ import dynet
 import logging
 import abc
 
-from tools.neural import TrainInstance, VectorManager
+from imsnpars.tools.neural import TrainInstance, VectorManager
   
 class SentenceReprBuilder(object):
     __metaclass__ = abc.ABCMeta

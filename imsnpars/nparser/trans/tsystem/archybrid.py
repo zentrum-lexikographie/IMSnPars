@@ -7,8 +7,8 @@ Created on 18.08.2017
 import logging
 import numpy as np
 
-from nparser.trans.tsystem import tdatatypes
-from nparser.trans.tsystem import oracle
+from imsnpars.nparser.trans.tsystem import tdatatypes
+from imsnpars.nparser.trans.tsystem import oracle
 
 class LeftArc(tdatatypes.Transition):
     

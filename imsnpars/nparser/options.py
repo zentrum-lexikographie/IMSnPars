@@ -8,9 +8,9 @@ import logging
 import dynet
 import sys
 
-import nparser.trans.options as toptions
-import nparser.graph.options as goptions
-import nparser.labels.options as loptions
+import imsnpars.nparser.trans.options as toptions
+import imsnpars.nparser.graph.options as goptions
+import imsnpars.nparser.labels.options as loptions
 
 def addCommonParserCmdArguments(argParser):
     # word representations

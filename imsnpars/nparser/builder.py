@@ -8,16 +8,16 @@ import logging
 import dynet
 import sys
 
-from tools import utils
-from repr import word, sentence
+from imsnpars.tools import utils
+from imsnpars.repr import word, sentence
     
-from nparser.task import NDependencyParser
-from nparser.features import ZeroDummyVectorBuilder, RandomDummyVectorBuilder
+from imsnpars.nparser.task import NDependencyParser
+from imsnpars.nparser.features import ZeroDummyVectorBuilder, RandomDummyVectorBuilder
 
-import nparser.graph.builder as gbuilder
-import nparser.trans.builder as tbuilder
-import nparser.labels.builder as lbuilder
-import nparser.labels.task as ltask
+import imsnpars.nparser.graph.builder as gbuilder
+import imsnpars.nparser.trans.builder as tbuilder
+import imsnpars.nparser.labels.builder as lbuilder
+import imsnpars.nparser.labels.task as ltask
 
 def buildNormalizer(normalize):
     if normalize:

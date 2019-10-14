@@ -7,12 +7,12 @@ Created on 23.08.2017
 import logging
 import sys
 
-import nparser.features
-import nparser.network
-import nparser.graph.features as gfeatures
-from nparser.graph import task, decoder
-from nparser.graph.mst import cle
-from nparser.labels import task as ltask
+import imsnpars.nparser.features
+import imsnpars.nparser.network
+import imsnpars.nparser.graph.features as gfeatures
+from imsnpars.nparser.graph import task, decoder
+from imsnpars.nparser.graph.mst import cle
+from imsnpars.nparser.labels import task as ltask
 
 def buildMSTDecoder(opts, featBuilder):
     if opts.mst == "CLE":
@@ -78,8 +78,8 @@ def buildGraphParser(opts, dummyBuilder, reprBuilder):
     extractor = gfeatures.GraphFeatureExtractor(tokExtractors)
     
     featIds = extractor.getFeatIds() + [ feat.getFeatId() for feat in featBuilders.values() ]
-    network = nparser.network.ParserNetwork(opts.mlpHiddenDim, opts.nonLinFun, featIds)
-    featBuilder = nparser.features.FeatReprBuilder(extractor, featBuilders, dummyBuilder, network, opts.parseLayer)
+    network = imsnpars.nparser.network.ParserNetwork(opts.mlpHiddenDim, opts.nonLinFun, featIds)
+    featBuilder = imsnpars.nparser.features.FeatReprBuilder(extractor, featBuilders, dummyBuilder, network, opts.parseLayer)
     mstAlg, decod = buildMSTDecoder(opts, featBuilder)
     
     if opts.labeler == "graph":

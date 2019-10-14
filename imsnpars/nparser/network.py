@@ -8,7 +8,7 @@ import dynet
 import logging
 import numpy as np
 
-from tools import neural
+from imsnpars.tools import neural
 
 class ParserNetwork(neural.NNetwork):
     def __init__(self, mlpHiddenDim, nonLinFun, featIds):

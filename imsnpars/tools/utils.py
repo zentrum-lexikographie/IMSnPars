@@ -9,7 +9,7 @@ import re
 import sys
 import pickle
 
-from tools import datatypes
+from . import datatypes
 
 class NParserOptions(object):
     def __init__(self):
