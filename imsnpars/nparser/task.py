@@ -177,16 +177,18 @@ class NDependencyParser(object):
                 vectors = self.__reprBuilder.prepareVectors(instance, isTraining=True)
                 
                 predictTrain = True
-                parsLosses, predictTree = self.__parser.buildLosses(vectors, instance, currentEpoch = trainManager.getCurrectEpoch(), predictTrain = predictTrain)
-                lblLosses, predictLbls = self.__labeler.buildLosses(vectors, instance, currentEpoch = trainManager.getCurrectEpoch(), predictTrain = predictTrain)
-                
-                if predictTrain and predictLbls:
-                    predictTree.setLabels(predictLbls)
-            
-                trainLogger.finishInstance()
-                
-                losses.extend(parsLosses + lblLosses)
-                    
+                try:
+                    parsLosses, predictTree = self.__parser.buildLosses(vectors, instance, currentEpoch = trainManager.getCurrectEpoch(), predictTrain = predictTrain)
+                    lblLosses, predictLbls = self.__labeler.buildLosses(vectors, instance, currentEpoch = trainManager.getCurrectEpoch(), predictTrain = predictTrain)
+                except:
+                    self.__logger.error("Failed to calculate loss on {}: {}".format(iId, instance))
+                    continue
+                else:
+                    if predictTrain and predictLbls:
+                        predictTree.setLabels(predictLbls)
+
+                    trainLogger.finishInstance()
+                    losses.extend(parsLosses + lblLosses)
                 # update
                 if len(losses) > lossBatchSize:
                     random.shuffle(losses)
