@@ -9,9 +9,9 @@ import sys
 import random
 import argparse
 
-from imsnpars.tools import utils, evaluator, training
-from imsnpars.nparser import builder
-from imsnpars.nparser import options
+from .tools import utils, evaluator, training
+from .nparser import builder
+from .nparser import options
 
 def buildParserFromArgs():
     argParser = argparse.ArgumentParser(description="""IMS Neural Parser""", add_help=False)
