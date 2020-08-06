@@ -25,7 +25,7 @@ Dependency Parsers](https://www.aclweb.org/anthology/P19-1012) (see [acl2019 bra
 
 > Python 3.7
 
-> [Dynet 2.0](http://dynet.io/)
+> [Dynet 2.0](http://dynet.io/), see [its installation instructions](https://github.com/clab/dynet/#installation) for compile-time requirements
 
 > [NetworkX package](https://networkx.github.io/)
 
