@@ -11,7 +11,9 @@ setup(name='imsnpars',
       packages=find_packages(),
       install_requires=[
           'dynet @ git+https://github.com/clab/dynet@7c533e#egg=dynet',
-          'networkx==2.4'
+          'networkx==2.4',
+          'conllu==3.1.1',
+          'Click==7.1.2'
       ],
       entry_points={
           'console_scripts': [
