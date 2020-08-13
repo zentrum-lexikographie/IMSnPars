@@ -16,6 +16,7 @@ setup(name='imsnpars',
       entry_points={
           'console_scripts': [
               'imsnpars = imsnpars.main:main',
+              'imsnpars-parse = imsnpars.parse:main',
           ],
       }
 )

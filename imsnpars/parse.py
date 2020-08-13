@@ -8,13 +8,14 @@ import sys
 from glob import glob
 from pathlib import Path
 
-from wordprofile.datatypes import TabsDocument
+import pyconll
 
 import imsnpars.nparser.options as options
 import imsnpars.tools.utils as utils
 # Set for graph search in parser
 from imsnpars.zdl.utils import get_parser, parse_document, chunks
 
+# Set recursion level because of networkx exception
 sys.setrecursionlimit(200)
 
 lformat = '[%(levelname)s] %(asctime)s %(name)s# %(message)s'
@@ -53,27 +54,31 @@ def build_parser_from_args(cmd_args=None):
 
 
 def process_files_parallel(srcs, args, options):
+    """Parses conllu files.
+
+    Predictions are either stored into separate files (when destination is given) or printed to console.
+    """
     parser = get_parser(args, options)
     for src_i, src in enumerate(srcs):
-        doc = TabsDocument.from_tabs(src)
-        doc.remove_xml_tags_from_tabs()
-        doc.remove_invalid_sentence()
+        doc = pyconll.load_from_file(src)
         file_name = os.path.basename(src)
         if args.conll:
             file_name = file_name[:-len("tabs")] + "conllu"
-        tgt_path = Path(os.path.join(args.dest, doc.meta['collection'], file_name))
+        tgt_path = Path(os.path.join(args.dest, doc[0].meta_value("DDC:meta.collection"), file_name))
         if not tgt_path.exists() or (os.path.getmtime(tgt_path) < os.path.getmtime(src)):
             parse_document(parser, doc, options.normalize)
-            logging.info("({}) - parsed document".format(doc.meta['basename']))
-            doc.save(tgt_path, as_conll=args.conll)
+            logging.info("({}) - parsed document".format(doc[0].meta_value("DDC:meta.basename")))
+            if not tgt_path.parent.exists():
+                tgt_path.parent.mkdir(parents=True)
+            with open(tgt_path, 'w') as fh:
+                fh.write(doc.conll())
         else:
             logging.info("({}) - SKIP - parsed document up-to-date".format(tgt_path))
 
 
 def main():
     args, options = build_parser_from_args()
-    src_files = glob("{}/**/*.tabs".format(args.src), recursive=True)
-    print(len(src_files), src_files[:10])
+    src_files = glob(args.src, recursive=True)
     if len(src_files) == 0:
         raise FileNotFoundError("No files found for parsing!")
     files = [(src, args, options) for src in chunks(src_files, 25)]

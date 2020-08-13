@@ -3,7 +3,7 @@
 import multiprocessing
 from typing import List
 
-from wordprofile.datatypes import TabsToken
+from pyconll.unit.sentence import Sentence
 
 from imsnpars.nparser import builder
 from imsnpars.tools.utils import ConLLToken as IMSConllToken
@@ -18,23 +18,29 @@ def chunks(lst, n):
         yield lst[i:i + n]
 
 
-def tokenized_sentence_to_conll_token(sentence: List[TabsToken], normalizer=None) -> List[IMSConllToken]:
-    sentence_conll = []
+def convert_pyconll_to_imsnpars_sentence(sentence: Sentence, normalizer=None) -> List[IMSConllToken]:
+    """Converts token-wise into imsnpars token format.
+    """
+    sentence_ims = []
     for token_i, token in enumerate(sentence):
-        sentence_conll.append(
+        sentence_ims.append(
             IMSConllToken(tokId=token_i + 1,
-                          orth=token.surface,
+                          orth=token.form,
                           lemma=token.lemma,
-                          pos=token.pos,
-                          langPos=token.pos,
+                          pos=token.xpos,
+                          langPos=token.xpos,
                           morph="",
                           headId=None,
                           dep=None,
-                          norm=normalizer.norm(token.surface) if normalizer else None))
-    return sentence_conll
+                          norm=normalizer.norm(token.form) if normalizer else None))
+    return sentence_ims
 
 
-def get_parser_prediction(parser, sentence):
+def parse_sentence(parser, sentence):
+    """Predicts dependencies for a single sentence.
+
+    Resets neural dependency parser, predicts the dependency tree, and adds predictions to input sentence.
+    """
     parser._NDependencyParser__renewNetwork()
     instance = parser._NDependencyParser__reprBuilder.buildInstance(sentence)
     tree = parser._NDependencyParser__predict_tree(instance)
@@ -45,19 +51,20 @@ def get_parser_prediction(parser, sentence):
 
 
 def parse_document(parser, doc, use_normalizer=False):
+    """Iterates over pyconll document and predicts dependencies per sentence.
+    """
     normalizer = builder.buildNormalizer(use_normalizer)
-    test_data = [sent.to_tabs_token(doc.index) for sent in doc.sentences]
-    parser_data = map(lambda s: tokenized_sentence_to_conll_token(s, normalizer), test_data)
-    parses = map(lambda s: get_parser_prediction(parser, s), parser_data)
-    doc.add_column('Head', 'hd')
-    doc.add_column('Deprel', 'rel')
-    for tabs_sent, parse_sent in zip(doc.sentences, parses):
-        tabs_sent.add_column([t.headId for t in parse_sent])
-        tabs_sent.add_column([t.dep for t in parse_sent])
+    for sent in doc:
+        sent_parsed = parse_sentence(parser, convert_pyconll_to_imsnpars_sentence(sent, normalizer))
+        for tok, tok_parsed in zip(sent, sent_parsed):
+            tok.head = str(tok_parsed.headId)
+            tok.deprel = str(tok_parsed.dep)
     return doc
 
 
 def get_parser(args, options):
+    """Manages multiple parser instances and either creates parser or reuses it.
+    """
     global parsers
     pid = multiprocessing.current_process().name
     if pid in parsers:
