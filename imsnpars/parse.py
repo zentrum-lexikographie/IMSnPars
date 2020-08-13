@@ -29,13 +29,12 @@ def build_parser_from_args(cmd_args=None):
     parserArgs = argParser.add_argument_group('parser')
     parserArgs.add_argument("--parser", help="which parser to use", choices=["GRAPH", "TRANS"], required=True)
     parserArgs.add_argument("--jobs", help="", type=int, default=1)
-    parserArgs.add_argument("--normalize", help="normalize the words", type=bool, required=False, default=True)
+    parserArgs.add_argument("--normalize", help="normalize the words", type=bool, default=True)
 
     # files
     filesArgs = argParser.add_argument_group('files')
     filesArgs.add_argument("--src", help="source file", type=str, required=True)
-    filesArgs.add_argument("--conll", help="outputs conll formatted files", action="store_true", required=False)
-    filesArgs.add_argument("--dest", help="source file destination", type=str, required=True)
+    filesArgs.add_argument("--dest", help="source file destination", type=str)
     filesArgs.add_argument("--model", help="load model from the file", type=str, required=True)
 
     # parse for the first time to only get the parser name
@@ -62,18 +61,19 @@ def process_files_parallel(srcs, args, options):
     for src_i, src in enumerate(srcs):
         doc = pyconll.load_from_file(src)
         file_name = os.path.basename(src)
-        if args.conll:
-            file_name = file_name[:-len("tabs")] + "conllu"
-        tgt_path = Path(os.path.join(args.dest, doc[0].meta_value("DDC:meta.collection"), file_name))
-        if not tgt_path.exists() or (os.path.getmtime(tgt_path) < os.path.getmtime(src)):
-            parse_document(parser, doc, options.normalize)
-            logging.info("({}) - parsed document".format(doc[0].meta_value("DDC:meta.basename")))
+        doc = parse_document(parser, doc, options.normalize)
+        logging.info("({}) - parsed document".format(file_name))
+        if args.dest:
+            if doc[0].meta_present("DDC:meta.collection"):
+                tgt_path = Path(os.path.join(args.dest, doc[0].meta_value("DDC:meta.collection"), file_name))
+            else:
+                tgt_path = Path(os.path.join(args.dest, file_name))
             if not tgt_path.parent.exists():
                 tgt_path.parent.mkdir(parents=True)
             with open(tgt_path, 'w') as fh:
                 fh.write(doc.conll())
         else:
-            logging.info("({}) - SKIP - parsed document up-to-date".format(tgt_path))
+            sys.stdout.write(doc.conll())
 
 
 def main():

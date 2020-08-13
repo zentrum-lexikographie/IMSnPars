@@ -52,6 +52,8 @@ def parse_sentence(parser, sentence):
 
 def parse_document(parser, doc, use_normalizer=False):
     """Iterates over pyconll document and predicts dependencies per sentence.
+
+    Attention: original document is changed.
     """
     normalizer = builder.buildNormalizer(use_normalizer)
     for sent in doc:
