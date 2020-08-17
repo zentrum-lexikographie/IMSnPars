@@ -4,16 +4,17 @@ Created on 23.08.2017
 @author: falensaa
 '''
 
-import dynet
 import logging
-import numpy as np
 
+import dynet
+import numpy as np
 from imsnpars.tools import neural
+
 
 class ParserNetwork(neural.NNetwork):
     def __init__(self, mlpHiddenDim, nonLinFun, featIds):
         self.__logger = logging.getLogger(self.__class__.__name__)
-        
+
         # dimentionalities
         self.__mlpHiddenDim = mlpHiddenDim
          
@@ -52,11 +53,11 @@ class ParserNetwork(neural.NNetwork):
     # NNetwork method
     def renewNetwork(self):
         for featId in self.__paramsMlpHidLayers:
-            self.__hidLayers[featId] = dynet.parameter(self.__paramsMlpHidLayers[featId])
+            self.__hidLayers[featId] = self.__paramsMlpHidLayers[featId]
 
-        self.__hiddenBias = dynet.parameter(self.__paramsMlpHiddenBias)
-        self.__outputW = dynet.parameter(self.__paramsMlpOutputW)
-        self.__outputBias = dynet.parameter(self.__paramsMlpOutputBias)
+        self.__hiddenBias = self.__paramsMlpHiddenBias
+        self.__outputW = self.__paramsMlpOutputW
+        self.__outputBias = self.__paramsMlpOutputBias
     
     # NNetwork method
     def buildOutput(self, inputRepr, isTraining):

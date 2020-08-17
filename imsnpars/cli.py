@@ -5,7 +5,6 @@ import sys
 
 import click
 import conllu
-
 import imsnpars.nparser.options as parser_options
 import imsnpars.tools.utils as parser_utils
 from imsnpars.nparser import builder as parser_builder
@@ -41,7 +40,7 @@ class Parser(object):
         )
         for pos, token in enumerate(sentence):
             token.update(
-                head=parse_tree.getHead(pos),
+                head=parse_tree.getHead(pos) + 1,
                 deprel=parse_tree.getLabel(pos)
             )
         return sentence
