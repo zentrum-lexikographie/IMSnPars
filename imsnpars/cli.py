@@ -29,8 +29,8 @@ class Parser(object):
                     tokId=(i + 1),
                     orth=token['form'],
                     lemma=token['lemma'],
-                    pos=token['xpostag'],
-                    langPos=token['xpostag'],
+                    pos=token['xpos'],
+                    langPos=token['xpos'],
                     morph='',
                     headId=None,
                     dep=None,
@@ -86,6 +86,7 @@ def main(input, output, batch, model, parser, jobs):
                 break
             for sentence in p.map(parser, chunk):
                 output.write(sentence.serialize())
+            output.flush()
 
 
 if __name__ == '__main__':
