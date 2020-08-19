@@ -11,17 +11,22 @@ from imsnpars.nparser import builder as parser_builder
 from imsnpars.tools.utils import ConLLToken as IMSConllToken
 
 
-class Parser(object):
+class Parser:
+    instances = {}
+
     def __init__(self, args, options):
         self.args = args
         self.options = options
-        self.instance = None
+
+    def get_parser_instance(self):
+        pname = multiprocessing.current_process().name
+        if pname not in self.instances:
+            self.instances[pname] = parser_builder.buildParser(self.options)
+            self.instances[pname].load(self.args.model)
+        return self.instances[pname]
 
     def __call__(self, sentence):
-        if not self.instance:
-            self.instance = parser_builder.buildParser(self.options)
-            self.instance.load(self.args.model)
-        parser = self.instance
+        parser = self.get_parser_instance()
         parser._NDependencyParser__renewNetwork()
         parse_tree = parser._NDependencyParser__predict_tree(
             parser._NDependencyParser__reprBuilder.buildInstance(
