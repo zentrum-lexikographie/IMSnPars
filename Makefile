@@ -1,6 +1,6 @@
 .PHONY: dev-setup
 dev-setup:
-	@pip install -r requirements-dev.txt
+	@pip install -e '.[test]'
 
 .PHONY: test
 test:

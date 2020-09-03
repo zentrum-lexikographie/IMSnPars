@@ -1,0 +1,3 @@
+outs:
+- md5: ed2bd2cb11e155c32938a08cd64a30d9
+  path: train.conllu

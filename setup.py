@@ -10,20 +10,24 @@ setup(name='imsnpars',
       author_email='agnieszka.falenska@ims.uni-stuttgart.de',
       packages=find_packages(exclude=['tests']),
       install_requires=[
+          'dvc==1.6.6',
           'dynet @ git+https://github.com/clab/dynet@7c533e#egg=dynet',
           'networkx==2.4',
           'conllu==3.1.1',
-          'Click==7.1.2'
+          'Click==7.1.2',
+          'psutil==5.7.2',
+          'ray==0.8.7',
+          'boltons==20.2.1'
       ],
       extras_require={
           'test': [
-              'pytest'
+              'pytest',
+              'autoflake',
+              'flake8'
           ]
       },
       entry_points={
           'console_scripts': [
-              'imsnpars = imsnpars.main:main',
-              'imsnpars-parse = imsnpars.cli:main',
+              'ims-nparser = imsnpars.cli:main',
           ],
-      }
-)
+      })

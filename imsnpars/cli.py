@@ -1,97 +1,47 @@
-import argparse
-import itertools
-import multiprocessing
+import logging
+from pathlib import Path
 import sys
 
+import boltons.iterutils
 import click
 import conllu
-import imsnpars.nparser.options as parser_options
-import imsnpars.tools.utils as parser_utils
-from imsnpars.nparser import builder as parser_builder
-from imsnpars.tools.utils import ConLLToken as IMSConllToken
+import psutil
+import ray
+
+from imsnpars.configure import create_parser, parse
+
+logging.basicConfig(stream=sys.stderr, level=logging.WARN)
 
 
+@ray.remote(num_cpus=1)
 class Parser:
-    instances = {}
+    def __init__(self, model_path):
+        self.parser = create_parser(Path(model_path))
 
-    def __init__(self, args, options):
-        self.args = args
-        self.options = options
-
-    def get_parser_instance(self):
-        pname = multiprocessing.current_process().name
-        if pname not in self.instances:
-            self.instances[pname] = parser_builder.buildParser(self.options)
-            self.instances[pname].load(self.args.model)
-        return self.instances[pname]
-
-    def __call__(self, sentence):
-        parser = self.get_parser_instance()
-        parser._NDependencyParser__renewNetwork()
-        parse_tree = parser._NDependencyParser__predict_tree(
-            parser._NDependencyParser__reprBuilder.buildInstance(
-                [IMSConllToken(
-                    tokId=(i + 1),
-                    orth=token['form'],
-                    lemma=token['lemma'],
-                    pos=token['xpos'],
-                    langPos=token['xpos'],
-                    morph='',
-                    headId=None,
-                    dep=None,
-                    norm=parser_builder.buildNormalizer(self.options.normalize)
-                ) for i, token in enumerate(sentence)]
-            )
-        )
-        for pos, token in enumerate(sentence):
-            token.update(
-                head=parse_tree.getHead(pos) + 1,
-                deprel=parse_tree.getLabel(pos)
-            )
-        return sentence
-
-
-def build_parser_from_args(cmd_args, parser, model):
-    argParser = argparse.ArgumentParser(description="""IMS BiLSTM Parser""", add_help=False)
-    argParser.add_argument("--parser", help="which parser to use", choices=["GRAPH", "TRANS"], required=True)
-    argParser.add_argument("--normalize", help="normalize the words", type=bool, default=True)
-    argParser.add_argument("--model", help="load model from the file", type=str, required=True)
-    # parse the second time to get all the args
-    parser_options.addParserCmdArguments(parser, argParser)
-    args, _ = argParser.parse_known_args(cmd_args)
-
-    opts = parser_utils.NParserOptions()
-    parser_options.fillParserOptions(args, opts)
-    opts.load(model + ".args")
-    opts.logOptions()
-
-    return args, opts
+    def parse(self, sentences):
+        return [parse(self.parser, s) for s in sentences]
 
 
 @click.command()
-@click.option('-b', '--batch', default=1000, type=int)
 @click.option('-i', '--input', default='-', type=click.File('r'))
 @click.option('-o', '--output', default='-', type=click.File('w'))
-@click.option('-m', '--model', type=str)
-@click.option('-p', '--parser', default="TRANS", type=str)
-@click.option('-j', '--jobs', default=1, type=int)
-def main(input, output, batch, model, parser, jobs):
-    args = sys.argv[1:] + ["--normalize", "True", "--parser", parser, "--model", model]
-    args, options = build_parser_from_args(cmd_args=args, parser=parser, model=model)
-    parser = Parser(args, options)
+@click.option('-b', '--batch-size', type=int, default=10)
+@click.option('-m', '--model', type=str, required=True)
+def main(input, output, model, batch_size):
+    ray.init(
+        include_dashboard=False,
+        configure_logging=False
+    )
 
-    # We provide the field definition explicitly, so the parser does not seek
-    # through the input stream, looking for a field declaration. The latter
-    # will fail on piped stdin.
+    parsers = ray.util.ActorPool(
+        [Parser.remote(model) for _ in range(psutil.cpu_count())]
+    )
     sentences = conllu.parse_incr(input, fields=conllu.parser.DEFAULT_FIELDS)
-    with multiprocessing.Pool(jobs) as p:
-        while True:
-            chunk = list(itertools.islice(sentences, batch))
-            if len(chunk) == 0:
-                break
-            for sentence in p.map(parser, chunk):
-                output.write(sentence.serialize())
-            output.flush()
+    batches = boltons.iterutils.chunked_iter(sentences, batch_size)
+
+    for batch in parsers.map(lambda p, b: p.parse.remote(b), batches):
+        for sentence in batch:
+            output.write(sentence.serialize())
 
 
 if __name__ == '__main__':
