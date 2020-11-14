@@ -16,6 +16,8 @@ jobs:
     - name: Install dependencies
       run: |
         python setup.py develop -q
+    - name: Download training data and the serialized model
+      run: |
         dvc pull
     - name: Lint with flake8
       run: |
