@@ -39,6 +39,12 @@ source .venv/bin/activate
 python setup.py install
 ```
 
+### Download training data and serialized model
+
+```sh
+dvc pull
+```
+
 ### Transition-based parser
 
 Training a new model:
