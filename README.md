@@ -36,7 +36,7 @@ Dependency Parsers](https://www.aclweb.org/anthology/P19-1012) (see [acl2019 bra
 ```sh
 python3.7 -m venv .venv
 source .venv/bin/activate
-python setup.py install
+python setup.py develop -q
 ```
 
 ### Download training data and serialized model
