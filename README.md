@@ -31,6 +31,14 @@ Dependency Parsers](https://www.aclweb.org/anthology/P19-1012) (see [acl2019 bra
 
 ## Usage
 
+### Install virtual env
+
+```sh
+python3.7 -m venv .venv
+source .venv/bin/activate
+python setup.py install
+```
+
 ### Transition-based parser
 
 Training a new model:
