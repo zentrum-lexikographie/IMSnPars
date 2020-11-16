@@ -46,7 +46,7 @@ python setup.py develop -q
 # dvc init
 
 # set the DVC endpoint
-dvc remote add imsnpars-data ssh://odo.dwds.de/home/imsnpars
+dvc remote add imsnpars-data ssh://odo.dwds.de/home/imsnpars/v1
 
 # configure your creds (You SSH username/password on odo.dwds.de)
 dvc remote modify --local imsnpars-data port 22
