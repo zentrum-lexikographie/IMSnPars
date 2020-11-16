@@ -42,7 +42,19 @@ python setup.py develop -q
 ### Download training data and serialized model
 
 ```sh
-dvc pull
+# initialize DVC in git repo
+# dvc init
+
+# set the DVC endpoint
+dvc remote add imsnpars-data ssh://odo.dwds.de/home/imsnpars
+
+# configure your creds (You SSH username/password on odo.dwds.de)
+dvc remote modify --local imsnpars-data port 22
+dvc remote modify --local imsnpars-data user YOURNAME
+dvc remote modify --local imsnpars-data password TOPSECRETPW
+
+# dowload data
+dvc pull -r imsnpars-data
 ```
 
 ### Transition-based parser
