@@ -1,8 +1,18 @@
-dvc>=1.6.6
+# neural network model
 dynet>=2.0.0
 networkx<2.5,>=2.1
+
+# preprocessing
 conllu>=3.1.1
-Click>=7.1.2
+
+# data management
+dvc>=1.6.6
+paramiko>=2.7.2
+
+# computing
 psutil>=5.7.2
 ray>=0.8.7
+
+# python tools
 boltons>=20.2.1
+Click>=7.1.2
