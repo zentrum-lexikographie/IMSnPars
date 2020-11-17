@@ -1,0 +1,8 @@
+dvc>=1.6.6
+dynet>=2.0.0
+networkx<2.5,>=2.1
+conllu>=3.1.1
+Click>=7.1.2
+psutil>=5.7.2
+ray>=0.8.7
+boltons>=20.2.1

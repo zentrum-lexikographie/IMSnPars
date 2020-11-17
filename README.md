@@ -36,7 +36,9 @@ Dependency Parsers](https://www.aclweb.org/anthology/P19-1012) (see [acl2019 bra
 ```sh
 python3.6 -m venv .venv
 source .venv/bin/activate
-python setup.py develop -q
+pip install --upgrade pip
+pip install -r requirements.txt --use-feature=2020-resolver
+pip install -r requirements-dev.txt --use-feature=2020-resolver
 ```
 
 ### Download training data and serialized model
