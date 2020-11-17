@@ -1,0 +1,2 @@
+['remote "imsnpars-data"']
+    url = ssh://odo.dwds.de/home/imsnpars/v1
