@@ -34,7 +34,7 @@ Dependency Parsers](https://www.aclweb.org/anthology/P19-1012) (see [acl2019 bra
 ### Install virtual env
 
 ```sh
-python3.7 -m venv .venv
+python3.6 -m venv .venv
 source .venv/bin/activate
 python setup.py develop -q
 ```
