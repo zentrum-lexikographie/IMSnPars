@@ -42,6 +42,7 @@ pip install -r requirements-dev.txt --use-feature=2020-resolver
 ```
 
 ### Download training data and serialized model
+Please contact the System Administrator for an user account.
 
 ```sh
 # initialize DVC in git repo
