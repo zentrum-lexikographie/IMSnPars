@@ -26,6 +26,9 @@ setup(name='imsnpars',
               'flake8'
           ]
       },
+      scripts=[
+          "scripts/imsnparser.py"
+      ],
       entry_points={
           'console_scripts': [
               'ims-nparser = imsnpars.cli:main',

@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-'''
-Created on 18.08.2017
-
-@author: falensaa
-'''
-
+"""
+Created on 18.08.2017 @author: falensaa
+2020-11-27 imsnpars.main.py renamed as scripts/imsnparser.py (by @ulf1)
+"""
 import logging
 import sys
 import random
