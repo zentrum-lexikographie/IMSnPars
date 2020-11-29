@@ -17,7 +17,7 @@ setup(name='imsnpars',
           'paramiko>=2.7.2',
           'Click>=7.1.2',
           'psutil>=5.7.2',
-          'ray==0.9.*',
+          'ray==0.8.*',
           'boltons>=20.2.1'
       ],
       extras_require={
