@@ -11,7 +11,7 @@ paramiko>=2.7.2
 
 # computing
 psutil>=5.7.2
-ray==0.8.*
+ray==1.0.0
 
 # python tools
 boltons>=20.2.1
