@@ -1,8 +1,12 @@
 # IMSnPars
+IMS Neural Dependency Parser is a re-implementation of the transition- and graph-based parsers described in [Simple and Accurate Dependency Parsing Using Bidirectional LSTM Feature Representations](https://aclweb.org/anthology/Q16-1023)
 
-IMS Neural Dependency Parser is a re-implementation of the transition- and graph-based parsers described in [Simple and Accurate Dependency Parsing
-Using Bidirectional LSTM Feature Representations](https://aclweb.org/anthology/Q16-1023)
+If you are using this software, please cite the paper [DOI:10.18653/v1/P19-1012](http://doi.org/10.18653/v1/P19-1012) by Agnieszka Faleńska ([github](https://github.com/AgnieszkaFalenska/), [www](https://www.ims.uni-stuttgart.de/en/institute/team/Falenska/)) and Jonas Kuhn ([www](https://www.ims.uni-stuttgart.de/en/institute/team/Kuhn-00013/)).
 
+
+## Releases
+
+### acl2019 branch
 The parser was developed for the paper [The (Non-)Utility of Structural Features in BiLSTM-based
 Dependency Parsers](https://www.aclweb.org/anthology/P19-1012) (see [acl2019 branch](https://github.com/AgnieszkaFalenska/IMSnPars/tree/acl2019) for all the paper specific changes and analysis tools):
 
@@ -20,6 +24,7 @@ Dependency Parsers](https://www.aclweb.org/anthology/P19-1012) (see [acl2019 bra
     pages = "117--128",
 }
 ```
+
 
 ## Usage
 
@@ -52,39 +57,67 @@ dvc remote modify --local imsnpars-data password TOPSECRETPW
 dvc pull -r imsnpars-data
 ```
 
-### Transition-based parser
+### Training a new Model
+There are two types of dependency parsers available
+that need to be specified with the `--parser` flag:
 
-Training a new model:
-```
-python3 imsnpars/main.py --parser TRANS --train [train_file] --save [model_file]
+- **Transition-based parser** (`TRANS`)
+- **Graph-based parser** (`GRAPH`)
+
+The training set must be `.conllu` file, 
+and its path is specified with the `--train` flag.
+Further a file path must be specified with the `--save` flag
+where to store the trained and serialized model.
+
+```sh
+imsnparser.py \
+    --parser [TRANS or GRAPH] \
+    --train [train_file] \
+    --save [model_file]
 ```
 
-Loading and predicting with the trained model:
-```
-python3 imsnpars/main.py --parser TRANS --model [model_file] --test  [test_file] --output [output_file]
+Example, given you [downloaded the HDT treebank dataset](#download-training-data-and-serialized-model) mentionend above,
+we train a new model with the transition-based parser (TRANS):
+
+```sh
+imsnparser.py \
+    --parser TRANS \
+    --train=data/hdt/train.conllu  \
+    --save=data/model/my-new-model-v1.2.3
 ```
 
+### Inference with a Pre-trained Model
+For evaluation as well as production purposes, 
+we can load a pre-trained model as explained in the [previous chapter](#training-a-new-model).
+Both input data (`--test`) and output data (`--output`) are `.conllu` files.
+
+```sh
+imsnparser.py \
+    --parser [TRANS or GRAPH] \
+    --model [model_file] \
+    --test [test_file] \
+    --output [output_file]
+```
+
+Analogous to the previous example,
+we can run inference on the HDT test set with our pre-trained model:
+
+```sh
+mkdir -p data/output
+imsnparser.py \
+    --parser TRANS \
+    --model=data/model/my-new-model-v1.2.3 \
+    --test=data/hdt/test.conllu  \
+    --output=data/output/predicted.conllu
+```
+
+### Other settings
 The parser supports many other options. All of them can be seen after running:
-```
-python3 imsnpars/main.py --parser TRANS --help
-```
-
-### Graph-based parser
-
-Training a new model:
-```
-python3 imsnpars/main.py --parser GRAPH --train [train_file] --save [model_file]
+```sh
+imsnparser.py --parser TRANS --help
+imsnparser.py --parser GRAPH --help
 ```
 
-Loading and predicting with the trained model:
-```
-python3 imsnpars/main.py --parser GRAPH --model [model_file] --test  [test_file] --output [output_file]
-```
-
-The parser supports many other options. All of them can be seen after running:
-```
-python3 imsnpars/main.py --parser GRAPH --help
-```
 
 ### Tests
 
