@@ -35,5 +35,6 @@ setup(name='imsnpars',
               'ims-nparser = imsnpars.cli:main',
           ],
       },
-      python_requires=">=3.6"
+      python_requires=">=3.6",
+      zip_safe=True
 )
