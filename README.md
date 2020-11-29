@@ -207,15 +207,14 @@ with open("data/hdt/test.conllu", "r") as fp:
         fp, fields=conllu.parser.DEFAULT_FIELDS)]
 
 # distributed batches
-batch_size = 2000
-num_batches = math.ceil(len(sentences) / batch_size)
+batch_size = math.ceil(len(sentences) / num_cpus)
 
 # start computation
 future_batches = [
     imsnparser_ray.remote(
         sentences[(i * batch_size):((i + 1) * batch_size)],
         model_path="data/model")
-    for i in range(num_batches)]
+    for i in range(num_cpus)]
 
 # wait for the results
 parsed_batches = ray.get(future_batches)
