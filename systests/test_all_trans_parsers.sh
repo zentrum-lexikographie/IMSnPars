@@ -1,21 +1,19 @@
 #!/bin/bash
 
-set -ue
+# options
+D=$(dirname $0)
+source "${D}/../scripts/get_global_vars.sh"
 
-## options
-D=$(readlink -f $(dirname $0))
-source $D/../scripts/get_global_vars.sh
+TRAIN="${D}/test_data/train_small.conllu"
+DEV="${D}/test_data/dev_small.conllu"
 
-TRAIN=`readlink -ev $D/test_data/train_small.conllu`
-DEV=`readlink -ev $D/test_data/dev_small.conllu`
-
-OUT=$D/out-trans
-mkdir -p $OUT
+OUT="${D}/out-trans"
+mkdir -p "${OUT}"
 
 DEVICE="CPU"
-MODEL=$OUT/test_trans.model
+MODEL="${OUT}/test_trans.model"
 
-PARSER=$IMSNPARS/imsnpars/main.py
+PARSER=imsnparser.py
 
 IFS=',' read -a tSystems <<< "ArcStandard,ArcHybrid,ASSwap,ArcHybridWithSwap"
 IFS=',' read -a labelers <<< "graph-mtl,None,trans"
@@ -47,7 +45,7 @@ for tSystem in "${tSystems[@]}"; do
 
 		# training
 		echo "Training"
-		$PYTHON $PARSER \
+		$PARSER \
 		        --dynet-devices $DEVICE \
 		        --dynet-seed $DYNET_SEED \
 		        --parser TRANS \
@@ -69,7 +67,7 @@ for tSystem in "${tSystems[@]}"; do
 		        --output $MODEL.train.out > $MODEL.train.log
     	
 		echo "Predicting"
-		$PYTHON $PARSER \
+		$PARSER \
 		        --dynet-devices "CPU" \
 		        --model $MODEL \
 		        --parser TRANS \

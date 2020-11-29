@@ -1,26 +1,25 @@
 #!/bin/bash
 
-set -ue
+# options
+D=$(dirname $0)
+echo $D
+source "${D}/../scripts/get_global_vars.sh"
 
-## options
-D=$(readlink -f $(dirname $0))
-source $D/../scripts/get_global_vars.sh
+TRAIN="${D}/test_data/train.conllu"
+DEV="${D}/test_data/dev.conllu"
 
-TRAIN=`readlink -ev $D/test_data/train.conllu`
-DEV=`readlink -ev $D/test_data/dev.conllu`
-
-OUT=$D/out-trans
-mkdir -p $OUT
+OUT="${D}/out-trans"
+mkdir -p "${OUT}"
 
 DEVICE="CPU"
 
 
-PARSER=$IMSNPARS/imsnpars/main.py
+PARSER=imsnparser.py
 
 echo "Training"
-MODEL=$OUT/test_trans.model
+MODEL="${OUT}/test_trans.model"
 
-$PYTHON -u $PARSER \
+$PARSER \
         --dynet-devices $DEVICE \
         --dynet-seed $DYNET_SEED \
         --seed $PARS_SEED \
@@ -38,7 +37,7 @@ $PYTHON -u $PARSER \
 		--output $MODEL.train.out #| tee $MODEL.log
 
 echo "Predicting 1"
-$PYTHON $PARSER \
+$PARSER \
         --dynet-devices "CPU" \
         --dynet-seed 42 \
         --model $MODEL \
@@ -48,7 +47,7 @@ $PYTHON $PARSER \
     	--output $MODEL.predict.out
     	
 echo "Predicting 2"
-$PYTHON $PARSER \
+$PARSER \
         --dynet-devices "CPU" \
         --dynet-seed 42 \
         --model $MODEL \

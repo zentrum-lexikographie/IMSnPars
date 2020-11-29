@@ -36,6 +36,7 @@ source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt --use-feature=2020-resolver
 pip install -r requirements-dev.txt --use-feature=2020-resolver
+python setup.py develop -q
 ```
 
 ### Download training data and serialized model
@@ -120,11 +121,12 @@ imsnparser.py --parser GRAPH --help
 
 
 ### Tests
-
 *IMSnPars* comes with four testing scripts to check if everything works fine:
-1. systests/test_trans_parser.sh -- trains a new transition-based parser on small fake data and uses this model for prediction
-2. systests/test_graph_parser.sh -- trains a new graph-based parser on small fake data and uses this model for prediction
-3. systests/test_all_trans_parsers.sh -- trains multiple transition-based models with different sets of options
-4. systests/test_all_graph_parsers.sh -- trains multiple graph-based models with different sets of options
+1. `systests/test_trans_parser.sh` -- trains a new transition-based parser on small fake data and uses this model for prediction
+2. `systests/test_graph_parser.sh` -- trains a new graph-based parser on small fake data and uses this model for prediction
+3. `systests/test_all_trans_parsers.sh` -- trains multiple transition-based models with different sets of options
+4. `systests/test_all_graph_parsers.sh` -- trains multiple graph-based models with different sets of options
+
+Please make sure that the software is installed as python package, e.g. run `python setup.py develop -q`.
 
 We recommend running the two first scripts before using *IMSnPars* for other purposes (both tests take less than a minute). Both of the scripts should end with an information that everything went fine. Transition-based parser achieves LAS=64.61 on the fake data and the graph-based one LAS=66.47.
