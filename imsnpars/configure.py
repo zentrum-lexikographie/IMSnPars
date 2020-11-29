@@ -1,5 +1,5 @@
 import argparse
-
+from pathlib import Path
 import imsnpars.nparser.options as parser_options
 import imsnpars.tools.utils as parser_utils
 from imsnpars.nparser import builder as parser_builder
@@ -8,7 +8,7 @@ from imsnpars.tools.utils import Normalizer as IMSNormalizer
 
 
 def create_parser(model_path):
-    model = (model_path / 'model').as_posix()
+    model = Path(f"{model_path}/model").as_posix()
     argParser = argparse.ArgumentParser(add_help=False)
     argParser.add_argument(
         "--parser", choices=["GRAPH", "TRANS"], required=True
@@ -23,7 +23,7 @@ def create_parser(model_path):
 
     opts = parser_utils.NParserOptions()
     parser_options.fillParserOptions(args, opts)
-    opts.load((model_path / 'model.args').as_posix())
+    opts.load(Path(f"{model_path}/model.args").as_posix())
 
     parser = parser_builder.buildParser(opts)
     parser.load(args.model)

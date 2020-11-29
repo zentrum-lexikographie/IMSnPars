@@ -119,6 +119,107 @@ imsnparser.py --parser TRANS --help
 imsnparser.py --parser GRAPH --help
 ```
 
+### Python Usage
+*IMSnPars* requires the CoNLL-U fields `'form', 'lemma', 'xpos'` (TIGER tagset) as input sequence.
+
+The following examples requires the HDT treebank, see [download](#download-training-data-and-serialized-model) section.
+
+```py
+import imsnpars.configure
+import conllu
+
+# load the parser
+parser = imsnpars.configure.create_parser("data/model")
+
+# open the CoNLL-U file
+fp = open("data/hdt/test.conllu", "r")
+
+# and create a generator
+sentences = conllu.parse_incr(fp, fields=conllu.parser.DEFAULT_FIELDS)
+
+# loop over the generator from here
+sent = next(sentences)
+tmp = imsnpars.configure.parse(parser, sent)
+
+for token in tmp:
+    print(token['head'])
+
+# close the file pointer
+fp.close()
+```
+
+### 
+In order to avoid too many I/O operations, 
+it's advised to load the whole `.conllu` file into the RAM.
+
+```py
+import imsnpars.configure
+import conllu
+
+# read the whole file as List[TokenList] into the RAM
+with open("data/hdt/test.conllu", "r") as fp:
+    sentences = [sent for sent in conllu.parse_incr(
+        fp, fields=conllu.parser.DEFAULT_FIELDS)]
+
+print(f"#num examples {len(sentences)}")
+
+# parse all examples
+parser = imsnpars.configure.create_parser("data/model")
+parsed = [imsnpars.configure.parse(parser, sent) for sent in sentences]
+
+# check
+for token in parsed[123]:
+    print(token['head'])
+```
+
+
+### Distribute with Ray.io
+Due to the large size of pre-trained neural network models,
+it's reasonable to distribute large batches across nodes.
+The trade-off is batch size vs. the overhead to load the model.
+
+```py
+import ray
+import psutil
+import imsnpars.configure
+import conllu
+from typing import List
+from conllu.models import TokenList
+import math
+
+# start ray
+num_cpus = max(1, int(psutil.cpu_count() * 0.8))
+ray.init(num_cpus=num_cpus)
+
+@ray.remote
+def imsnparser_ray(sentences: List[TokenList],
+                   model_path: str="data/model") -> List[TokenList]:
+    # load parser
+    parser = imsnpars.configure.create_parser(model_path)
+    # parse all sentences
+    parsed = [imsnpars.configure.parse(parser, sent) for sent in sentences]
+    # done
+    return parsed
+
+# read the whole file as List[TokenList] into the RAM
+with open("data/hdt/test.conllu", "r") as fp:
+    sentences = [sent for sent in conllu.parse_incr(
+        fp, fields=conllu.parser.DEFAULT_FIELDS)]
+
+# distributed batches
+batch_size = 2000
+num_batches = math.ceil(len(sentences) / batch_size)
+
+# start computation
+future_batches = [
+    imsnparser_ray.remote(
+        sentences[(i * batch_size):((i + 1) * batch_size)],
+        model_path="data/model")
+    for i in range(num_batches)]
+
+# wait for the results
+parsed_batches = ray.get(future_batches)
+```
 
 ### Tests
 *IMSnPars* comes with four testing scripts to check if everything works fine:
