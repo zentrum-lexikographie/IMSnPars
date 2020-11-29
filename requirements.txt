@@ -10,8 +10,8 @@ dvc>=1.6.6
 paramiko>=2.7.2
 
 # computing
+ray>=1.0.0
 psutil>=5.7.2
-ray==1.0.0
 
 # python tools
 boltons>=20.2.1
