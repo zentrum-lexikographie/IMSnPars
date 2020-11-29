@@ -2,7 +2,7 @@
 
 # options
 D=$(dirname $0)
-source "${D}/../scripts/get_global_vars.sh"
+source "${D}/get_global_vars.sh"
 
 TRAIN="${D}/test_data/train.conllu"
 DEV="${D}/test_data/dev.conllu"
